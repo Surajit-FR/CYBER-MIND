@@ -5,6 +5,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const { ConnectToDataBase } = require('./config/database_config');
+const http = require('http');
+const socketIo = require('socket.io');
+const { handleConnection } = require('./services/Chat.service');
 
 const AuthRoutes = require('./routes/Auth.routes');
 const UserRoutes = require('./routes/User.routes');
@@ -27,6 +30,10 @@ app.use(bodyParser.json());
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
+// Socket.IO setup
+const server = http.createServer(app);
+const io = socketIo(server);
 
 // Server Health check
 app.get('/health', (req, res) => {
@@ -97,6 +104,10 @@ app.use((req, res, next) => {
 const PORT = process.env.PORT || 4400;
 const HOST = `${process.env.HOST}:${PORT}` || `http://localhost:${PORT}`;
 
-app.listen(PORT, () => {
+
+// Socket server
+io.on('connection', handleConnection);
+
+server.listen(PORT, () => {
     console.log(`Server Connected On Port ${HOST}`)
 });

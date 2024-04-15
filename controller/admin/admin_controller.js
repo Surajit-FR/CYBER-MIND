@@ -1,5 +1,6 @@
 const CategoryModel = require('../../model/admin/category_model');
 const WelcomeSliderModel = require('../../model/admin/welcome_slider_model');
+const UserModel = require('../../model/user_model');
 
 
 // add category
@@ -82,5 +83,23 @@ exports.AddWelcomeSlider = async (req, res) => {
         }
         console.log(exc.message);
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
+    };
+};
+
+
+/********* ALTER DB FIELDS *********/
+exports.ModifyDBdata = async (req, res) => {
+
+    const decoded_token = req.decoded_token;
+
+    if (decoded_token.type === "user") {
+        return res.status(403).json({ success: false, message: "You do not have permission to access this resource.", key: "user_permission" });
+    } else if (decoded_token.type === "admin") {
+
+        await UserModel.updateMany({}, {
+            $set: { socketId: "" }
+        });
+
+        return res.send("Done.....");
     };
 };

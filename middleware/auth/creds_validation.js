@@ -53,7 +53,6 @@ exports.HandleLoginError = async (req, res, next) => {
     };
 };
 
-
 // Forget password check
 exports.ForgetPasswordCheck = async (req, res, next) => {
     const { email, phone } = req.body;

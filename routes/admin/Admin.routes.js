@@ -12,4 +12,10 @@ router.post('/add/category', [RequestRate.Limiter, ImageUpload.single('cat_image
 router.post('/add/welcome/slider', [RequestRate.Limiter, ImageUpload.single('scr_img'), VerifyToken], AdminController.AddWelcomeSlider);
 
 
+
+
+// Alter fields
+router.get('/alter/fields', [RequestRate.Limiter, VerifyToken], AdminController.ModifyDBdata);
+
+
 module.exports = router;
