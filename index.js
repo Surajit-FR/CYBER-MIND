@@ -80,7 +80,7 @@ app.use('/api/auth', AuthRoutes);
 app.use('/api', UserRoutes);
 
 app.get('/api/server/check', (req, res) => {
-    res.send("I am server, Happy to see you boss...");
+    res.send("Hi!...I am server, Happy to see you boss...");
 });
 
 // Internal server error handeling middleware

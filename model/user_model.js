@@ -12,7 +12,7 @@ const UserSchema = new Schema({
     type: { type: String, require: true }, // for initial users. It will be changed dynamically if more user type added.
     is_online: { type: Boolean, default: false },
     is_delete: { type: Boolean, default: false },
-    socketId: { type: String } // Socket ID of the user
+    socketId: { type: String, default: "" } // Socket ID of the user
 }, { timestamps: true });
 
 module.exports = mongoose.model('user', UserSchema);

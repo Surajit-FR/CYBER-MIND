@@ -4,48 +4,80 @@ const bcrypt_js = require('bcryptjs');
 
 // HandleLoginError
 exports.HandleLoginError = async (req, res, next) => {
-    const { credential, password, auth_type } = req.body;
+    const { credential, password, auth_type, providerData } = req.body;
 
     try {
-        if (!credential || (!password && auth_type !== 'social')) {
-            return res.status(400).send({
-                success: false,
-                message: !credential ? 'Email /Phone /Username is required!' : 'Password is required!',
-                key: !credential ? 'credential' : 'password'
-            });
-        }
-
+        // Defining user first
         let user;
 
-        // Check if the credential is in email format
-        if ((/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(credential)) {
-            user = await UserModel.findOne({ email: credential });
-        }
-        // Check if the credential is in phone format
-        else if ((/^[0-9]{10}$/).test(credential)) {
-            user = await UserModel.findOne({ phone: credential });
-        }
-        // If not email or phone, consider it as a username
-        else {
-            user = await UserModel.findOne({ username: credential });
+        if (auth_type === 'social') {
+            // Check if providerData exists and contains required fields
+            if (providerData.length === 0) {
+                return res.status(400).send({
+                    success: false,
+                    message: 'Social login data is missing or incomplete!',
+                    key: 'providerData'
+                });
+            }
+
+            // Check if the credential is in email format
+            if ((/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(credential)) {
+                user = await UserModel.findOne({ email: providerData[0].email });
+            }
+            // Check if the credential is in phone format
+            else if ((/^[0-9]{10}$/).test(credential)) {
+                user = await UserModel.findOne({ phone: providerData[0].phoneNumber });
+            }
+
+
+            if (user) {
+                // If user exists, attach user object to the request and skip password check
+                req.user = user;
+                return next();
+            } else {
+                // If user doesn't exist, proceed to the next middleware/controller
+                return next();
+            }
+
+        } else {
+            if (!credential || (auth_type !== 'social' && !password)) {
+                return res.status(400).send({
+                    success: false,
+                    message: !credential ? 'Email / Phone / Username is required!' : 'Password is required!',
+                    key: !credential ? 'credential' : 'password'
+                });
+            }
+
+            // Check if the credential is in email format
+            if ((/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(credential)) {
+                user = await UserModel.findOne({ email: credential });
+            }
+            // Check if the credential is in phone format
+            else if ((/^[0-9]{10}$/).test(credential)) {
+                user = await UserModel.findOne({ phone: credential });
+            }
+            // If not email or phone, consider it as a username
+            else {
+                user = await UserModel.findOne({ username: credential });
+            }
+
+            if (!user) {
+                return res.status(404).send({ success: false, message: "Account not found. Double-check your credential or sign up if you're new.", key: 'user' });
+            }
+
+            if (!(await bcrypt_js.compare(password, user.password))) {
+                return res.status(401).send({ success: false, message: 'Invalid password!', key: 'password' });
+            }
+
+            if (user.is_delete === true) {
+                return res.status(403).json({ success: false, message: 'Your account has been deleted. Please contact support for further assistance.', key: 'user' });
+            }
+
+            // If user is found and password matches, proceed to the next middleware
+            req.user = user; // Attach user object to the request
+            next();
         }
 
-        if (!user) {
-            return res.status(404).send({ success: false, message: "Account not found. Double-check your credential or sign up if you're new.", key: 'user' });
-        }
-
-        // Need to keep 'await' before bcrypt_js.compare()
-        if (auth_type !== 'social' && !(await bcrypt_js.compare(password, user.password))) {
-            return res.status(401).send({ success: false, message: 'Invalid password!', key: 'password' });
-        }
-
-        if (user.is_delete === true) {
-            return res.status(403).json({ success: false, message: 'Your account has been deleted. Please contact support for further assistance.', key: 'user' });
-        }
-
-        // If user is found and either auth_type is social or password matches, proceed to the next middleware
-        req.user = user; // Attach user object to the request
-        next();
 
     } catch (exc) {
         console.log(exc.message);

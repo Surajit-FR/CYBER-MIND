@@ -2,6 +2,7 @@ const UserModel = require('../model/user_model');
 const SecurePassword = require('../helpers/secure_password');
 const CreateToken = require('../helpers/create_token');
 const JOI = require('joi');
+const { GoogleAuth } = require('../helpers/social_auth');
 
 
 // Define password schema for validation
@@ -20,16 +21,43 @@ const passwordSchema = JOI.string()
 
 // Login user
 exports.Login = async (req, res) => {
-    const { remember_me } = req.body;
+    const { remember_me, auth_type, providerId } = req.body;
     try {
-        // Accessing the user object attached by the middleware 
-        const _user = req.user;
-        const USER_DATA = { ..._user._doc, remember_me };
-        const tokenData = CreateToken(_user);
-        return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
+        if (auth_type === 'social') {
+            // Handle social (google / facebook) login logic.
+            const { email, uid, displayName, photoURL, phoneNumber } = req.body.providerData[0];
+
+            // Check if user already exists in the database
+            let user = await UserModel.findOne({ email: email });
+
+            if (!user) {
+                // If user doesn't exist, create a new one for GOOGLE
+                if (providerId === "google.com") {
+                    user = await GoogleAuth(email, uid, displayName, photoURL, phoneNumber);
+                }
+                // If user doesn't exist, create a new one for FACEBOOK
+                if (providerId === "facebook.com") {
+                    return res.send({ message: "Facebook login will be implemented soon!!" });
+                }
+                if (user.err) {
+                    return res.status(500).json({ success: false, message: user.message, error: user.err });
+                }
+            }
+
+            // Continue with login logic for social login
+            const USER_DATA = { ...user._doc, remember_me };
+            const tokenData = CreateToken(user);
+            return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
+        } else {
+            // Continue with regular login logic
+            const _user = req.user;
+            const USER_DATA = { ..._user._doc, remember_me };
+            const tokenData = CreateToken(_user);
+            return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
+        }
     } catch (exc) {
         console.log(exc.message);
-        return res.status(500).json({ success: false, messaage: "Internal server error", error: exc.message });
+        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
     }
 };
 
