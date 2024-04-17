@@ -19,51 +19,24 @@ const passwordSchema = JOI.string()
     });
 
 
-// Login user
-exports.Login = async (req, res) => {
-    const { remember_me, auth_type, providerId } = req.body;
+// Login user (Regular)
+exports.LoginUserRegular = async (req, res) => {
+    const { remember_me } = req.body;
     try {
-        if (auth_type === 'social') {
-            // Handle social (google / facebook) login logic.
-            const { email, uid, displayName, photoURL, phoneNumber } = req.body.providerData[0];
-
-            // Check if user already exists in the database
-            let user = await UserModel.findOne({ email: email });
-
-            if (!user) {
-                // If user doesn't exist, create a new one for GOOGLE
-                if (providerId === "google.com") {
-                    user = await GoogleAuth(email, uid, displayName, photoURL, phoneNumber);
-                }
-                // If user doesn't exist, create a new one for FACEBOOK
-                if (providerId === "facebook.com") {
-                    return res.send({ message: "Facebook login will be implemented soon!!" });
-                }
-                if (user.err) {
-                    return res.status(500).json({ success: false, message: user.message, error: user.err });
-                }
-            }
-
-            // Continue with login logic for social login
-            const USER_DATA = { ...user._doc, remember_me };
-            const tokenData = CreateToken(user);
-            return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
-        } else {
-            // Continue with regular login logic
-            const _user = req.user;
-            const USER_DATA = { ..._user._doc, remember_me };
-            const tokenData = CreateToken(_user);
-            return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
-        }
+        // Accessing the user object attached by the middleware 
+        const _user = req.user;
+        const USER_DATA = { ..._user._doc, remember_me };
+        const tokenData = CreateToken(_user);
+        return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
     } catch (exc) {
         console.log(exc.message);
-        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
+        return res.status(500).json({ success: false, messaage: "Internal server error", error: exc.message });
     }
 };
 
-// Register user
-exports.Register = async (req, res) => {
-    const { username, email, password, type, auth_type } = req.body;
+// Register user (Regular)
+exports.RegisterUserRegular = async (req, res) => {
+    const { username, email, password, type } = req.body;
     try {
         const HashedPassword = await SecurePassword(password);
         const NewUser = await UserModel({
@@ -79,6 +52,45 @@ exports.Register = async (req, res) => {
     } catch (exc) {
         console.log(exc.message);
         return res.status(500).json({ success: false, messaage: "Internal server error", error: exc.message });
+    }
+};
+
+// Auth user (Social)
+exports.AuthUserSocial = async (req, res) => {
+    try {
+        // Check if user object is already attached by the middleware
+        let user = req.user;
+
+        // If user object is not attached, it means user needs to be fetched from req.body
+        if (!user) {
+            const { email, uid, displayName, photoURL, phoneNumber, providerId } = req.body;
+
+            // Check if user already exists in the database
+            user = await UserModel.findOne({ email: email });
+
+            if (!user) {
+
+                // If user doesn't exist, create a new one
+                if (providerId === "google.com") {
+                    user = await GoogleAuth(email, uid, displayName, photoURL, phoneNumber);
+                } else if (providerId === "facebook.com") {
+                    return res.status(400).json({ success: false, message: "Facebook login is not supported yet" });
+                }
+                // Handle error while creating user
+                if (user.err) {
+                    return res.status(500).json({ success: false, message: user.message, error: user.err });
+                }
+            }
+        };
+
+        // Continue with login logic
+        const USER_DATA = { ...user._doc };
+        const tokenData = CreateToken(user);
+        return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
+
+    } catch (exc) {
+        console.log(exc.message);
+        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
     }
 };
 
