@@ -59,7 +59,7 @@ exports.HandleSocialAuthError = async (req, res, next) => {
 
     try {
         // Check if all required fields are present
-        if (!email || !uid || !displayName || !photoURL || !phoneNumber || !providerId) {
+        if (!email || !uid || !displayName || !photoURL || !providerId) {
             return res.status(400).send({
                 success: false,
                 message: 'Social login data is missing or incomplete!',

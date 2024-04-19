@@ -14,10 +14,10 @@ module.exports = (UserModel) => {
             "string.max": "Username should be maximum 20 characters long !!",
             "string.pattern.base": "Only lowercase alphabets, numbers & special characters are allowed !!",
         }),
-        email: JOI.string().min(3).max(20).required().email({ minDomainSegments: 1, maxDomainSegments: 2, tlds: { allow: ['com', 'co', 'in'] } }).pattern(/^[a-zA-Z0-9._%+-]+(@[a-zA-Z0-9.-]{5,})+\.[a-zA-Z]{2,}$/).messages({
+        email: JOI.string().min(3).max(60).required().email({ minDomainSegments: 1, maxDomainSegments: 2, tlds: { allow: ['com', 'co', 'in'] } }).pattern(/^[a-zA-Z0-9._%+-]+(@[a-zA-Z0-9.-]{5,})+\.[a-zA-Z]{2,}$/).messages({
             "string.empty": "Email ID is required !!",
             "string.min": "Email ID should be minimum 3 characters long !!",
-            "string.max": "Email ID should be maximum 20 characters long !!",
+            "string.max": "Email ID should be maximum 60 characters long !!",
             "string.email": "Invalid email format !!",
             "string.pattern.base": "Invalid email format !!",
         }),
