@@ -13,8 +13,10 @@ router.post('/user/login', [RequestRate.Limiter, HandleRegularLoginError], AuthC
 router.post('/user/social', [RequestRate.Limiter, HandleSocialAuthError], AuthController.AuthUserSocial);
 // Register user (regular)
 router.post('/user/register', [RequestRate.Limiter, ModelAuth(ValidateUser), DuplicateUserCheck], AuthController.RegisterUserRegular);
-// User forget password
-router.post('/user/forget/password', [RequestRate.Limiter, ForgetPasswordCheck], AuthController.ForgetPassword);
+// Forget password verify user
+router.post('/forgetpass/verify/user', [RequestRate.Limiter], AuthController.ForgetPassVerifyUser);
+// Update password
+router.post('/user/update/password', [RequestRate.Limiter], AuthController.UpdatePassword);
 
 
 module.exports = router;

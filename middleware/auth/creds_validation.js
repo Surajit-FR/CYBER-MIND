@@ -1,3 +1,4 @@
+const { findUserByCredential } = require('../../helpers/find_user_by_credential');
 const UserModel = require('../../model/user_model');
 const bcrypt_js = require('bcryptjs');
 
@@ -15,20 +16,7 @@ exports.HandleRegularLoginError = async (req, res, next) => {
             });
         }
 
-        let user;
-
-        // Check if the credential is in email format
-        if ((/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).test(credential)) {
-            user = await UserModel.findOne({ email: credential });
-        }
-        // Check if the credential is in phone format
-        else if ((/^[0-9]{10}$/).test(credential)) {
-            user = await UserModel.findOne({ phone: credential });
-        }
-        // If not email or phone, consider it as a username
-        else {
-            user = await UserModel.findOne({ username: credential });
-        }
+        const user = await findUserByCredential(credential);
 
         if (!user) {
             return res.status(404).send({ success: false, message: "Account not found. Double-check your credential or sign up if you're new.", key: 'user' });
@@ -93,41 +81,5 @@ exports.HandleSocialAuthError = async (req, res, next) => {
         console.log(exc.message);
         return res.status(500).json({ success: false, message: "Something went wrong. Please try again.", error: exc.message });
     }
-};
-
-// Forget password check
-exports.ForgetPasswordCheck = async (req, res, next) => {
-    const { email, phone } = req.body;
-
-    try {
-        // Check if both email and phone are missing
-        if (!email && !phone) {
-            return res.status(400).json({ success: false, message: "Please provide either email or phone", key: "email_phone" });
-        }
-
-
-        let existingUser;
-        if (email) {
-            existingUser = await UserModel.findOne({ email });
-            if (!existingUser) {
-                return res.status(404).json({ success: false, message: `User not found with email-id: '${email}'`, key: "email" });
-            }
-        }
-
-        if (phone) {
-            existingUser = await UserModel.findOne({ phone });
-            if (!existingUser) {
-                return res.status(404).json({ success: false, message: `User not found with phone number: '${phone}'`, key: "phone" });
-            }
-        }
-
-        req.user = existingUser;
-        req.passwordRequired = true; // Flag indicating that password is required
-        next();
-
-    } catch (exc) {
-        console.log(exc.message);
-        return res.status(500).json({ success: false, message: "Something Went Wrong Please Try Again", error: exc.message });
-    };
 };
 

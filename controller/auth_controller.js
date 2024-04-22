@@ -3,6 +3,7 @@ const SecurePassword = require('../helpers/secure_password');
 const CreateToken = require('../helpers/create_token');
 const JOI = require('joi');
 const { GoogleAuth } = require('../helpers/social_auth');
+const { findUserByCredential } = require('../helpers/find_user_by_credential');
 
 
 // Define password schema for validation
@@ -95,34 +96,56 @@ exports.AuthUserSocial = async (req, res) => {
     }
 };
 
-// Forget password
-exports.ForgetPassword = async (req, res) => {
-    const passwordRequired = req.passwordRequired;
+// Forget password verify user
+exports.ForgetPassVerifyUser = async (req, res, next) => {
+    const { credential } = req.body;
 
     try {
-        if (passwordRequired) {
-            const { password } = req.body;
-            if (!password) {
-                return res.status(400).json({ success: false, message: "Please provide a password!", key: "password", password_required: passwordRequired });
-            }
-            // Validate password
-            const { error } = passwordSchema.validate(password);
-            if (error) {
-                return res.status(400).json({ success: false, message: error.message, key: "password" });
-            }
-            const HashedPassword = await SecurePassword(password);
-            const _user = req.user;
-            await UserModel.findByIdAndUpdate(
-                _user._id,
-                {
-                    password: HashedPassword,
-                },
-                { new: true }
-            );
-            return res.status(201).json({ success: true, message: "Password updated successfully!" });
+        const existingUser = await findUserByCredential(credential);
+
+        // Check if both email and phone are missing
+        if (!credential) {
+            return res.status(400).json({ success: false, message: "Please provide either email or phone", key: "email_phone" });
+        } else if (!existingUser) {
+            return res.status(404).json({ success: false, message: "User not found with this credential.", key: "credential" });
         } else {
-            return res.status(200).json({ success: true, message: "Password not required for this user.", password_required: passwordRequired });
+            return res.status(202).json({ success: true, message: "Password change process initiated. Please proceed to reset your password.", user_id: existingUser._id });
+        };
+
+    } catch (exc) {
+        console.log(exc.message);
+        return res.status(500).json({ success: false, message: "Something Went Wrong Please Try Again", error: exc.message });
+    };
+};
+
+// Update password
+exports.UpdatePassword = async (req, res) => {
+    const { password, user_id } = req.body;
+
+    try {
+
+        if (!password) {
+            return res.status(400).json({ success: false, message: "Please provide a password!", key: "password" });
         }
+        if (!user_id) {
+            return res.status(400).json({ success: false, message: "User Id is missing.", key: "user_id" });
+        }
+        const { error } = passwordSchema.validate(password);
+        // Validate password
+        if (error) {
+            return res.status(400).json({ success: false, message: error.message, key: "password" });
+        };
+
+        const HashedPassword = await SecurePassword(password);
+
+        await UserModel.findByIdAndUpdate(
+            user_id,
+            {
+                password: HashedPassword,
+            },
+            { new: true }
+        );
+        return res.status(201).json({ success: true, message: "Password updated successfully!" });
     } catch (exc) {
         console.log(exc.message);
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
