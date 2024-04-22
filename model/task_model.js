@@ -6,7 +6,7 @@ const TaskSchema = new Schema({
     task_time: { type: Number, require: true },
     location: { type: String, default: "" },
     task_assignee: { type: Schema.Types.ObjectId, require: true, ref: 'user' },
-    task_partner: { type: Schema.Types.ObjectId, require: true, ref: 'user' },
+    task_partner: [{ type: Schema.Types.ObjectId, require: true, ref: 'user' }],
     priority: { type: String, require: true },
     is_complete: { type: Boolean, default: false },
     is_delete: { type: Boolean, default: false },

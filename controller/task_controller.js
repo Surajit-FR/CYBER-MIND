@@ -76,6 +76,8 @@ exports.GetAllTask = async (req, res) => {
 
         const all_task_data = await TaskModel
             .find({ is_delete: false })
+            .populate('task_assignee', '-password') // Populate task_assignee field, excluding password field
+            .populate('task_partner', '-password') // Populate task_partner field, excluding password field
             .select('-__v') // Exclude sensitive fields
             .lean(); // Convert to plain JavaScript objects for performance
 
@@ -83,7 +85,7 @@ exports.GetAllTask = async (req, res) => {
     } catch (exc) {
         console.log(exc.message);
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
-    };
+    }
 };
 
 // Complete Task
