@@ -90,16 +90,9 @@ exports.AddWelcomeSlider = async (req, res) => {
 /********* ALTER DB FIELDS *********/
 exports.ModifyDBdata = async (req, res) => {
 
-    const decoded_token = req.decoded_token;
+    await UserModel.updateMany({}, {
+        $set: { family: "" }
+    });
 
-    if (decoded_token.type === "user") {
-        return res.status(403).json({ success: false, message: "You do not have permission to access this resource.", key: "user_permission" });
-    } else if (decoded_token.type === "admin") {
-
-        await UserModel.updateMany({}, {
-            $set: { socketId: "" }
-        });
-
-        return res.send("Done.....");
-    };
+    return res.send("Done.....");
 };

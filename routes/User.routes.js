@@ -9,15 +9,24 @@ const { ImageUpload } = require('../helpers/media_config');
 const ModelAuth = require('../middleware/auth/model_auth');
 const ValidateEvent = require('../helpers/validator/validate_event');
 const ValidateTask = require('../helpers/validator/validate_task');
+const ValidateFamily = require('../helpers/validator/validate_family');
 
 
 /**************************************************** USER ROUTES ****************************************************/
 // Update User Profile
 router.post('/user/profile/update/:user_id', [RequestRate.Limiter, ImageUpload.single('profile_img'), VerifyToken, UserExsists], UserController.UpdateUserProfile);
-// Get All User
-router.get('/get/all/user', [RequestRate.Limiter, VerifyToken], UserController.GetAllUser);
 // Get welcome sliders
 router.get('/get/welcome/sliders', [RequestRate.Limiter], UserController.GetWelcomeSliders);
+
+/**************************************************** MEMBER ROUTES ****************************************************/
+// Add Member
+router.post('/add/member', [RequestRate.Limiter, VerifyToken], UserController.AddMembers);
+// Get All Members
+router.get('/get/all/member', [RequestRate.Limiter, VerifyToken], UserController.GetAllMember);
+
+/**************************************************** FAMILY ROUTES ****************************************************/
+// Add Family
+router.post('/create/family', [RequestRate.Limiter, VerifyToken, ModelAuth(ValidateFamily)], UserController.CreateFamily);
 
 /**************************************************** EVENT ROUTES ****************************************************/
 // Add events

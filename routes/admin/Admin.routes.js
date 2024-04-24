@@ -15,7 +15,7 @@ router.post('/add/welcome/slider', [RequestRate.Limiter, ImageUpload.single('scr
 
 
 // Alter fields
-router.get('/alter/fields', [RequestRate.Limiter, VerifyToken], AdminController.ModifyDBdata);
+router.get('/alter/fields', [RequestRate.Limiter], AdminController.ModifyDBdata);
 
 
 module.exports = router;

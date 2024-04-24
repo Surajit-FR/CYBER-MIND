@@ -12,6 +12,7 @@ const CreateToken = (user) => {
         city_state: user.city_state,
         password: user.password,
         socketId: user.socketId,
+        family: user.family,
         type: user.type,
         is_online: user.is_online,
         is_delete: user.is_delete,
