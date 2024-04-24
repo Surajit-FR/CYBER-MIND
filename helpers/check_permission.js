@@ -3,8 +3,7 @@ const MemberModel = require("../model/member_model");
 exports.checkAdminPermission = async (userId, familyId) => {
     try {
         // Query the Membership collection to check if the user is the admin of the family
-        const membership = await MemberModel.findOne({ $and: [{ userId }, { familyId }] });
-
+        const membership = await MemberModel.findOne({ user: userId, family: familyId });
         // If no membership found, return false
         if (!membership) {
             return false;

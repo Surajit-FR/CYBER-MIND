@@ -84,8 +84,8 @@ exports.CreateFamily = async (req, res) => {
 
         // Create membership for the user who created the family
         const newMembership = new MemberModel({
-            userId: decoded_token._id,
-            familyId: newFamily._id,
+            user: decoded_token._id,
+            family: newFamily._id,
             role: 'admin' // Set the role as admin
         });
 
@@ -116,7 +116,7 @@ exports.AddMembers = async (req, res) => {
         // Check admin permission for each member
         const decoded_token = req.decoded_token; // Assuming the user information is stored in the token
         for (const member of members) {
-            const isAdmin = await checkAdminPermission(decoded_token._id, member.familyId);
+            const isAdmin = await checkAdminPermission(decoded_token._id, member.family);
 
             if (!isAdmin) {
                 return res.status(403).json({ success: false, message: "You are not authorized to add members to this family" });
@@ -125,19 +125,19 @@ exports.AddMembers = async (req, res) => {
 
         // Iterate through each member and add them to the family
         for (const member of members) {
-            const { userId, familyId, role } = member;
+            const { user, family, role } = member;
 
             // Check if a membership with the same userId and familyId already exists
-            const existingMembership = await MemberModel.findOne({ userId, familyId });
-            const family = await FamilyModel.findOne({ _id: familyId });
+            const existingMembership = await MemberModel.findOne({ user, family });
+            const _family = await FamilyModel.findOne({ _id: family });
 
             // If membership already exists, send a response indicating that the user is already a member
             if (existingMembership) continue;
 
             // Create membership for the user and add them to the family
             const newMembership = new MemberModel({
-                userId,
-                familyId,
+                user,
+                family,
                 role
             });
 
@@ -146,7 +146,7 @@ exports.AddMembers = async (req, res) => {
             await UserModel.findByIdAndUpdate(
                 member.userId,
                 {
-                    family: family.family_hash_id,
+                    family: _family.family_hash_id,
                 },
                 { new: true }
             );
@@ -162,7 +162,7 @@ exports.AddMembers = async (req, res) => {
 // Get All Member
 exports.GetAllMember = async (req, res) => {
     try {
-        const decoded_token = req.decoded_token; // Assuming the user information is stored in the token
+        const decoded_token = req.decoded_token;
 
         // Ensure familyId is provided in the request
         const family_hash_Id = decoded_token.family;
@@ -171,10 +171,22 @@ exports.GetAllMember = async (req, res) => {
             return res.status(400).json({ success: false, message: "Family ID is required" });
         }
 
+        // Fetch the FAMILY of logged-in user
+        const FAMILY = await FamilyModel.findOne({ family_hash_id: decoded_token.family });
+
         // Fetch all members of the family
-        const allMembers = await UserModel.find({ family: family_hash_Id }).select('-password -__v').lean();
+        const allMembers = await MemberModel.find({ family: FAMILY._id })
+            .populate({
+                path: 'user',
+                select: '-password -createdAt -updatedAt -__v' // Exclude fields from user population
+            })
+            .populate({
+                path: 'family',
+                select: '-createdAt -updatedAt -__v' // Exclude fields from family population
+            });
 
         return res.status(200).json({ success: true, message: "Data fetched successfully!", data: allMembers });
+
     } catch (exc) {
         console.error(exc.message);
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
