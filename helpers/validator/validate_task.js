@@ -7,9 +7,6 @@ module.exports = (TaskModel) => {
             "string.min": "Minimum length should be 3",
             "string.pattern.base": "Only alphabets and blank spaces are allowed !!",
         }),
-        task_assignee: JOI.string().required().messages({
-            "string.empty": "Task assignee is missing !!",
-        }),
         task_partner: JOI.array().items(JOI.string()).required().min(1).messages({
             "array.empty": "Please add at least one task partner !!",
             "any.required": "Please add a task partner !!",

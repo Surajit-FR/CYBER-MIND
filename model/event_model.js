@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const EventSchema = new Schema({
+    family: { type: Schema.Types.ObjectId, ref: 'family' },
     event_name: { type: String, require: true },
     location: { type: String, require: true },
     alert: { type: String, require: true },

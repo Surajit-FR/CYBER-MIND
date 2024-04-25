@@ -178,14 +178,16 @@ exports.GetAllMember = async (req, res) => {
         const allMembers = await MemberModel.find({ family: FAMILY._id })
             .populate({
                 path: 'user',
-                select: '-password -createdAt -updatedAt -__v' // Exclude fields from user population
+                select: '-password -createdAt -updatedAt -__v'
             })
             .populate({
                 path: 'family',
-                select: '-createdAt -updatedAt -__v' // Exclude fields from family population
-            });
+                select: '-createdAt -updatedAt -__v'
+            })
+            .select('-createdAt -updatedAt -__v')
+            .lean(); // Convert to plain JavaScript objects for performance
 
-        return res.status(200).json({ success: true, message: "Data fetched successfully!", data: allMembers });
+        return res.status(200).json({ success: true, message: allMembers?.length > 0 ? "Data fetched successfully!" : "No data found!", data: allMembers });
 
     } catch (exc) {
         console.error(exc.message);
