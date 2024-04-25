@@ -1,7 +1,6 @@
 const EventModel = require('../model/event_model');
 const FamilyModel = require('../model/family_model');
 const TaskModel = require('../model/task_model');
-const UserModel = require('../model/user_model');
 
 
 // Add events
