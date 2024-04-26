@@ -165,17 +165,13 @@ exports.GetAllMember = async (req, res) => {
         const decoded_token = req.decoded_token;
 
         // Ensure familyId is provided in the request
-        const family_hash_Id = decoded_token.family;
-
-        if (!family_hash_Id) {
-            return res.status(400).json({ success: false, message: "Family ID is required" });
-        }
+        const family_hash_id = decoded_token.family;
 
         // Fetch the FAMILY of logged-in user
-        const FAMILY = await FamilyModel.findOne({ family_hash_id: decoded_token.family });
+        const FAMILY = await FamilyModel.findOne({ family_hash_id });
 
         // Fetch all members of the family
-        const allMembers = await MemberModel.find({ family: FAMILY._id })
+        const allMembers = await MemberModel.find({ family: FAMILY?._id })
             .populate({
                 path: 'user',
                 select: '-password -createdAt -updatedAt -__v'
