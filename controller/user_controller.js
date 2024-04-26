@@ -11,7 +11,7 @@ const { checkAdminPermission } = require('../helpers/check_permission');
 
 // Update User Profile
 exports.UpdateUserProfile = async (req, res) => {
-    const { username, email, phone, city_state, password, type } = req.body;
+    const { full_name, email, phone, city_state, password, type } = req.body;
     const { user_id } = req.params;
 
     try {
@@ -23,7 +23,7 @@ exports.UpdateUserProfile = async (req, res) => {
         const UpdatedUser = await UserModel.findByIdAndUpdate(
             { _id: user_id },
             {
-                username,
+                full_name,
                 profile_img: filePath,
                 email,
                 phone,

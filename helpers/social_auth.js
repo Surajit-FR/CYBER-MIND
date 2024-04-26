@@ -4,12 +4,11 @@ const SecurePassword = require('../helpers/secure_password');
 
 // GoogleAuth
 exports.GoogleAuth = async (email, uid, displayName, photoURL, phoneNumber) => {
-    // console.log("GoogleAuth=>", { email, uid, displayName, photoURL, phoneNumber });
     try {
         const HashedPassword = await SecurePassword(uid);
 
         const NewUser = await UserModel({
-            username: displayName,
+            full_name: displayName,
             profile_img: photoURL,
             email: email,
             phone: phoneNumber,

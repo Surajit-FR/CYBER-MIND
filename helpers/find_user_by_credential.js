@@ -10,10 +10,6 @@ exports.findUserByCredential = async (credential) => {
     // Check if the credential is in phone format
     else if ((/^[0-9]{10}$/).test(credential)) {
         user = await UserModel.findOne({ phone: credential });
-    }
-    // If not email or phone, consider it as a username
-    else {
-        user = await UserModel.findOne({ username: credential });
     };
 
     return user;

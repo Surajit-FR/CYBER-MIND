@@ -37,12 +37,12 @@ exports.LoginUserRegular = async (req, res) => {
 
 // Register user (Regular)
 exports.RegisterUserRegular = async (req, res) => {
-    const { username, email, password, type } = req.body;
+    const { full_name, email, password, type } = req.body;
     try {
         const HashedPassword = await SecurePassword(password);
         const NewUser = await UserModel({
-            username,
-            email,
+            full_name,
+            email: email.toLowerCase(),
             password: HashedPassword,
             type
         });

@@ -11,7 +11,7 @@ exports.HandleRegularLoginError = async (req, res, next) => {
         if (!credential || !password) {
             return res.status(400).send({
                 success: false,
-                message: !credential ? 'Email /Phone /Username is required!' : 'Password is required!',
+                message: !credential ? 'Email /Phone  is required!' : 'Password is required!',
                 key: !credential ? 'credential' : 'password'
             });
         }
