@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const { type } = require('os');
 const Schema = mongoose.Schema;
 
 const CategorySchema = new Schema({
-    category_name: { type: String, require: true },
-    cat_image_url: { type: String, require: true },
+    category_name: { type: String, required: true },
+    cat_image_url: { type: String, required: true },
+    color_code: [{ type: String, require: true }],
     is_delete: { type: Boolean, default: false },
 }, { timestamps: true });
 

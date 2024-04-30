@@ -16,14 +16,12 @@ const ValidateFamily = require('../helpers/validator/validate_family');
 /**************************************************** USER ROUTES ****************************************************/
 // Update User Profile
 router.post('/user/profile/update/:user_id', [RequestRate.Limiter, ImageUpload.single('profile_img'), VerifyToken, UserExsists], UserController.UpdateUserProfile);
-// Get welcome sliders
-router.get('/get/welcome/sliders', [RequestRate.Limiter], UserController.GetWelcomeSliders);
 
 /**************************************************** MEMBER ROUTES ****************************************************/
 // Add Member
 router.post('/add/member', [RequestRate.Limiter, VerifyToken], UserController.AddMembers);
 // Get All Members
-router.get('/get/all/member', [RequestRate.Limiter, VerifyToken], UserController.GetAllMember);
+router.get('/get/all/member', [VerifyToken], UserController.GetAllMember);
 
 /**************************************************** FAMILY ROUTES ****************************************************/
 // Add Family
@@ -33,12 +31,12 @@ router.post('/create/family', [RequestRate.Limiter, VerifyToken, ModelAuth(Valid
 // Add events
 router.post('/add/event', [RequestRate.Limiter, VerifyToken, ModelAuth(ValidateEvent)], TaskEventController.AddEvents);
 // Get all events
-router.get('/get/all/events', [RequestRate.Limiter, VerifyToken], TaskEventController.GetAllEvent);
+router.get('/get/all/events', [VerifyToken], TaskEventController.GetAllEvent);
 
 // Add tasks
 router.post('/add/task', [RequestRate.Limiter, VerifyToken, ModelAuth(ValidateTask), TaskEventMiddleware.checkTaskPartnersFamily], TaskEventController.AddTask);
 // Get all tasks
-router.get('/get/all/task', [RequestRate.Limiter, VerifyToken], TaskEventController.GetAllTask);
+router.get('/get/all/task', [VerifyToken], TaskEventController.GetAllTask);
 // Complete tasks
 router.post('/complete/task/:task_id', [RequestRate.Limiter, VerifyToken], TaskEventController.CompleteTask);
 

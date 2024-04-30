@@ -1,5 +1,4 @@
 const UserModel = require('../model/user_model');
-const WelcomeSliderModel = require('../model/admin/welcome_slider_model');
 const SecurePassword = require('../helpers/secure_password');
 const CreateToken = require('../helpers/create_token');
 const { deleteFile } = require('../helpers/file_utils');
@@ -47,17 +46,6 @@ exports.UpdateUserProfile = async (req, res) => {
                 console.error("Error deleting file:", err);
             }
         }
-        console.log(exc.message);
-        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
-    };
-};
-
-// Get welcome sliders
-exports.GetWelcomeSliders = async (req, res) => {
-    try {
-        const all_sliders_data = await WelcomeSliderModel.find({});
-        return res.status(200).json({ success: true, message: "Data fetched successfully!", data: all_sliders_data });
-    } catch (exc) {
         console.log(exc.message);
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
     };

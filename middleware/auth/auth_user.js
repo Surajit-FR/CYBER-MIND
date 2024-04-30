@@ -19,6 +19,7 @@ exports.VerifyToken = async (req, res, next) => {
         next();
 
     } catch (exc) {
+        console.log(exc.message);
         return res.status(500).json({ success: false, messaage: "Internal server error", error: exc.message });
     };
 };

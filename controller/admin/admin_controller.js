@@ -90,8 +90,10 @@ exports.AddWelcomeSlider = async (req, res) => {
 /********* ALTER DB FIELDS *********/
 exports.ModifyDBdata = async (req, res) => {
 
-    await UserModel.updateMany({}, {
-        $set: { family: "" }
+    await CategoryModel.updateMany({}, {
+        $set: {
+            color_code: ['rgba(176, 165, 255, 0.5)', 'rgba(176, 165, 255, 0.5)', 'rgba(204, 138, 255, 1)']
+        }
     });
 
     return res.send("Done.....");
