@@ -20,6 +20,6 @@ exports.VerifyToken = async (req, res, next) => {
 
     } catch (exc) {
         console.log(exc.message);
-        return res.status(500).json({ success: false, messaage: "Internal server error", error: exc.message });
+        return res.status(401).json({ success: false, message: "Session Expired. Please Login !!", error: exc.message });
     };
 };

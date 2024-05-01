@@ -15,7 +15,7 @@ const CreateToken = (user) => {
         type: user.type,
         is_online: user.is_online,
         is_delete: user.is_delete,
-    }, secret_key, { expiresIn: '2h' });
+    }, secret_key, { expiresIn: process.env.SESSION_TIME });
 
     return token;
 };
