@@ -2,7 +2,7 @@ const JWT = require('jsonwebtoken');
 const { secret_key } = require('../../helpers/secret_key');
 
 exports.VerifyToken = async (req, res, next) => {
-    let token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization;
+    let token = req.body.token || req.query.token || req.headers["x-access-token"] || req.headers.authorization || req.body.headers.Authorization;
     try {
         if (token?.startsWith('Bearer ')) {
             token = token.slice(7);

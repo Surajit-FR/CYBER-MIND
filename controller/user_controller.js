@@ -1,5 +1,4 @@
 const UserModel = require('../model/user_model');
-const SecurePassword = require('../helpers/secure_password');
 const CreateToken = require('../helpers/create_token');
 const { deleteFile } = require('../helpers/file_utils');
 const FamilyModel = require('../model/family_model');
@@ -12,9 +11,6 @@ const { checkAdminPermission } = require('../helpers/check_permission');
 exports.UpdateUserProfile = async (req, res) => {
     const { full_name, email, phone, city_state } = req.body;
     try {
-        // Remove "public" prefix from file path
-        const filePath = req?.file?.path?.replace('public', '');
-
         const decoded_token = req.decoded_token;
         const user_id = decoded_token._id;
 
@@ -22,7 +18,6 @@ exports.UpdateUserProfile = async (req, res) => {
             { _id: user_id },
             {
                 full_name,
-                profile_img: filePath,
                 email,
                 phone,
                 city_state,
@@ -32,6 +27,32 @@ exports.UpdateUserProfile = async (req, res) => {
 
         const tokenData = CreateToken(UpdatedUser);
         return res.status(201).json({ success: true, message: "Profile updated successfully!", data: UpdatedUser, token: tokenData });
+
+    } catch (exc) {
+        console.log(exc.message);
+        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
+    };
+};
+
+// UpdateUserProfileImage
+exports.UpdateUserProfileImage = async (req, res) => {
+    try {
+        // Remove "public" prefix from file path
+        const filePath = req?.file?.path?.replace('public', '');
+
+        const decoded_token = req.decoded_token;
+        const user_id = decoded_token._id;
+
+        const UpdatedUser = await UserModel.findByIdAndUpdate(
+            { _id: user_id },
+            {
+                profile_img: filePath,
+            },
+            { new: true }
+        );
+
+        const tokenData = CreateToken(UpdatedUser);
+        return res.status(201).json({ success: true, message: "Profile Image updated successfully!", data: UpdatedUser, token: tokenData });
 
     } catch (exc) {
         // Delete uploaded file if an error occurred during upload
