@@ -10,14 +10,13 @@ const { checkAdminPermission } = require('../helpers/check_permission');
 
 // Update User Profile
 exports.UpdateUserProfile = async (req, res) => {
-    const { full_name, email, phone, city_state, password, type } = req.body;
-    const { user_id } = req.params;
-
+    const { full_name, email, phone, city_state } = req.body;
     try {
-        const HashedPassword = await SecurePassword(password);
-
         // Remove "public" prefix from file path
         const filePath = req?.file?.path?.replace('public', '');
+
+        const decoded_token = req.decoded_token;
+        const user_id = decoded_token._id;
 
         const UpdatedUser = await UserModel.findByIdAndUpdate(
             { _id: user_id },
@@ -27,8 +26,6 @@ exports.UpdateUserProfile = async (req, res) => {
                 email,
                 phone,
                 city_state,
-                password: HashedPassword,
-                type,
             },
             { new: true }
         );

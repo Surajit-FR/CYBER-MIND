@@ -89,7 +89,7 @@ app.get('/api/server/check', (req, res) => {
 app.use((err, req, res, next) => {
     res.status(500).json({
         status: 500,
-        message: "Server Error",
+        message: err.message,
         error: err
     });
 });
