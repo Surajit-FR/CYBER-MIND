@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { DuplicateUserCheck } = require('../middleware/auth/duplicate_check');
-const { HandleRegularLoginError, ForgetPasswordCheck, HandleSocialAuthError } = require('../middleware/auth/creds_validation');
+const { HandleRegularLoginError, HandleSocialAuthError } = require('../middleware/auth/creds_validation');
 const AuthController = require('../controller/auth_controller');
 const ValidateUser = require('../helpers/validator/validate_user');
 const ModelAuth = require('../middleware/auth/model_auth');

@@ -13,6 +13,8 @@ const CreateToken = (user) => {
         socketId: user.socketId,
         family: user.family,
         type: user.type,
+        remember_me: user.remember_me,
+        auth_type: user.auth_type,
         is_online: user.is_online,
         is_delete: user.is_delete,
     }, secret_key, { expiresIn: process.env.SESSION_TIME });

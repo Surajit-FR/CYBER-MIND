@@ -16,6 +16,7 @@ const ValidateFamily = require('../helpers/validator/validate_family');
 /**************************************************** USER ROUTES ****************************************************/
 // Update User Profile
 router.post('/user/profile/update', [RequestRate.Limiter, VerifyToken, UserExsists], UserController.UpdateUserProfile);
+// Update User Profile Picture
 router.post('/user/profile/image/update', [RequestRate.Limiter, ImageUpload.single('profile_img'), VerifyToken, UserExsists], UserController.UpdateUserProfileImage);
 
 /**************************************************** MEMBER ROUTES ****************************************************/

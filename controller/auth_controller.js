@@ -27,7 +27,7 @@ exports.LoginUserRegular = async (req, res) => {
         // Accessing the user object attached by the middleware 
         const _user = req.user;
         const USER_DATA = { ..._user._doc, remember_me, auth_type: "regular" };
-        const tokenData = CreateToken(_user);
+        const tokenData = CreateToken(USER_DATA);
         return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
     } catch (exc) {
         console.log(exc.message);
@@ -48,9 +48,9 @@ exports.RegisterUserRegular = async (req, res) => {
         });
 
         const userData = await NewUser.save();
-        const USER_DATE = { ...userData._doc, auth_type: "regular" };
-        const tokenData = CreateToken(NewUser);
-        return res.status(201).json({ success: true, message: "Registered Successfully!", data: USER_DATE, token: tokenData });
+        const USER_DATA = { ...userData._doc, remember_me: false, auth_type: "regular" };
+        const tokenData = CreateToken(USER_DATA);
+        return res.status(201).json({ success: true, message: "Registered Successfully!", data: USER_DATA, token: tokenData });
     } catch (exc) {
         console.log(exc.message);
         return res.status(500).json({ success: false, messaage: "Internal server error", error: exc.message });
@@ -86,8 +86,8 @@ exports.AuthUserSocial = async (req, res) => {
         };
 
         // Continue with login logic
-        const USER_DATA = { ...user._doc, auth_type: "social" };
-        const tokenData = CreateToken(user);
+        const USER_DATA = { ...user._doc, remember_me: false, auth_type: "social" };
+        const tokenData = CreateToken(USER_DATA);
         return res.status(200).json({ success: true, message: "Login Successful!", data: USER_DATA, token: tokenData });
 
     } catch (exc) {

@@ -25,8 +25,13 @@ exports.UpdateUserProfile = async (req, res) => {
             { new: true }
         );
 
-        const tokenData = CreateToken(UpdatedUser);
-        return res.status(201).json({ success: true, message: "Profile updated successfully!", data: UpdatedUser, token: tokenData });
+        const USER_DATA = {
+            ...UpdatedUser._doc,
+            remember_me: decoded_token.remember_me,
+            auth_type: decoded_token.auth_type,
+        };
+        const tokenData = CreateToken(USER_DATA);
+        return res.status(201).json({ success: true, message: "Profile updated successfully!", data: USER_DATA, token: tokenData });
 
     } catch (exc) {
         console.log(exc.message);
@@ -51,8 +56,13 @@ exports.UpdateUserProfileImage = async (req, res) => {
             { new: true }
         );
 
-        const tokenData = CreateToken(UpdatedUser);
-        return res.status(201).json({ success: true, message: "Profile Image updated successfully!", data: UpdatedUser, token: tokenData });
+        const USER_DATA = {
+            ...UpdatedUser._doc,
+            remember_me: decoded_token.remember_me,
+            auth_type: decoded_token.auth_type,
+        };
+        const tokenData = CreateToken(USER_DATA);
+        return res.status(201).json({ success: true, message: "Profile updated successfully!", data: USER_DATA, token: tokenData });
 
     } catch (exc) {
         // Delete uploaded file if an error occurred during upload
