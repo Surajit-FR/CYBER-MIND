@@ -12,6 +12,7 @@ const { handleConnection } = require('./services/Chat.service');
 const AuthRoutes = require('./routes/Auth.routes');
 const UserRoutes = require('./routes/User.routes');
 const UtilityRoutes = require('./routes/Utility.routes');
+const TransactionRoutes = require('./routes/Transaction.routes');
 
 const AdminRoutes = require('./routes/admin/Admin.routes');
 
@@ -80,6 +81,7 @@ app.use('/api/admin', AdminRoutes);
 app.use('/api/auth', AuthRoutes);
 app.use('/api', UserRoutes);
 app.use('/api', UtilityRoutes);
+app.use('/api', TransactionRoutes);
 
 app.get('/api/server/check', (req, res) => {
     res.send("Hi!...I am server, Happy to see you boss...");

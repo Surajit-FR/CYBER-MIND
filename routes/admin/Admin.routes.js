@@ -11,6 +11,10 @@ router.post('/add/category', [RequestRate.Limiter, ImageUpload.single('cat_image
 // User forget password
 router.post('/add/welcome/slider', [RequestRate.Limiter, ImageUpload.single('scr_img'), VerifyToken], AdminController.AddWelcomeSlider);
 
+/**************************************************** TRANSACTION ROUTES ****************************************************/
+// Add transaction category
+router.post('/add/transaction/category', [RequestRate.Limiter, VerifyToken], AdminController.AddTransactionCategory);
+
 
 
 

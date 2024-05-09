@@ -1,6 +1,6 @@
 const CategoryModel = require('../../model/admin/category_model');
+const TransactionCategoryModel = require('../../model/admin/transaction_category_model');
 const WelcomeSliderModel = require('../../model/admin/welcome_slider_model');
-const UserModel = require('../../model/user_model');
 
 
 // add category
@@ -22,7 +22,7 @@ exports.AddCategory = async (req, res) => {
             }
 
             const NewCategory = await CategoryModel({
-                category_name,
+                category_name: category_name.trim(),
                 cat_image_url: filePath,
             });
             await NewCategory.save();
@@ -63,8 +63,8 @@ exports.AddWelcomeSlider = async (req, res) => {
             }
 
             const NewWelcomeSlider = await WelcomeSliderModel({
-                heading,
-                para,
+                heading: heading.trim(),
+                para: para.trim(),
                 scr_img: filePath,
             });
             await NewWelcomeSlider.save();
@@ -85,6 +85,37 @@ exports.AddWelcomeSlider = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
     };
 };
+
+// add transaction category
+exports.AddTransactionCategory = async (req, res) => {
+    const { transaction_category_name } = req.body;
+
+    try {
+        const decoded_token = req.decoded_token;
+
+        if (decoded_token.type === "user") {
+            return res.status(403).json({ success: false, message: "You do not have permission to access this resource.", key: "user_permission" });
+        } else if (decoded_token.type === "admin") {
+            // Check for empty fields
+            if (!transaction_category_name) {
+                return res.status(400).json({ success: false, message: "A transaction category name is required!" });
+            }
+
+            const NewTransactionCategory = await TransactionCategoryModel({
+                transaction_category_name: transaction_category_name.trim(),
+            });
+            await NewTransactionCategory.save();
+            return res.status(201).json({ success: true, message: "A New Transaction Category added!" });
+        }
+    } catch (error) {
+        console.log(exc.message);
+        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
+    }
+};
+
+
+
+
 
 
 /********* ALTER DB FIELDS *********/
