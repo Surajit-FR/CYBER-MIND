@@ -6,7 +6,7 @@ const EventSchema = new Schema({
     event_name: { type: String, require: true },
     location: { type: String, require: true },
     alert: { type: String, require: true },
-    ia_allDay: { type: Boolean, default: false },
+    is_allDay: { type: Boolean, default: false },
     event_start_timestamp: { type: Number, require: true },
     event_end_timestamp: { type: Number, require: true },
     repeat: { type: String, require: true },
