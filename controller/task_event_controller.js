@@ -5,7 +5,7 @@ const TaskModel = require('../model/task_model');
 
 // Add events
 exports.AddEvents = async (req, res) => {
-    const { event_name, location, alert, event_start_timestamp, event_end_timestamp, repeat, url, note } = req.body;
+    const { event_name, location, alert, event_start_timestamp, event_end_timestamp, is_allDay, repeat, url, note } = req.body;
 
     try {
         // Retrieve data from token recieved.
@@ -22,13 +22,14 @@ exports.AddEvents = async (req, res) => {
             alert,
             event_start_timestamp,
             event_end_timestamp,
+            is_allDay,
             repeat,
             url,
             note
         });
 
-        await NewEvent.save();
-        return res.status(201).json({ success: true, message: "Event added successfully!" });
+        const SavedEvent = await NewEvent.save();
+        return res.status(201).json({ success: true, message: "Event added successfully!", data: SavedEvent });
 
     } catch (exc) {
         console.log(exc.message);
