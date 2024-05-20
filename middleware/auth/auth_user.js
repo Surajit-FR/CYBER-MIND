@@ -19,6 +19,15 @@ exports.VerifyToken = async (req, res, next) => {
         next();
 
     } catch (exc) {
+        // Delete uploaded file if an error occurred during upload
+        if (req?.file) {
+            try {
+                await deleteFile(req?.file?.path);
+                console.log("File deleted successfully");
+            } catch (err) {
+                console.error("Error deleting file:", err);
+            }
+        }
         console.log(exc.message);
         return res.status(401).json({ success: false, message: "Session Expired. Please Login !!", error: exc.message });
     };

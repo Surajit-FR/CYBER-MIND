@@ -3,15 +3,15 @@ const Schema = mongoose.Schema;
 
 const EventSchema = new Schema({
     family: { type: Schema.Types.ObjectId, ref: 'family' },
-    event_name: { type: String, require: true },
-    location: { type: String, require: true },
-    alert: { type: String, require: true },
-    is_allDay: { type: Boolean, default: false },
-    event_start_timestamp: { type: Number, require: true },
-    event_end_timestamp: { type: Number, require: true },
-    repeat: { type: String, require: true },
-    url: { type: String, default: "" },
-    note: { type: String, default: "" },
+    event_name: { type: String, required: true },
+    location: { type: String, required: false },
+    alert: { type: String, required: true },
+    is_allDay: { type: Boolean, required: true },
+    event_start_timestamp: { type: Number, required: true },
+    event_end_timestamp: { type: Number, required: true },
+    repeat: { type: String, required: false },
+    url: { type: String, required: false },
+    note: { type: String, required: false },
     is_delete: { type: Boolean, default: false },
 }, { timestamps: true });
 

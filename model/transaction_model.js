@@ -3,11 +3,11 @@ const Schema = mongoose.Schema;
 
 const TransactionSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'user' },
-    tnx_amout: { type: Number, require: true },
-    category: { type: String, require: true },
+    tnx_amout: { type: Number, required: true },
+    category: { type: String, required: true },
     note: { type: String, default: "" },
-    date_time: { type: Number, require: true },
-    tnx_type: { type: String, require: true },
+    date_time: { type: Number, required: true },
+    tnx_type: { type: String, required: true },
     is_delete: { type: Boolean, default: false },
 }, { timestamps: true });
 
