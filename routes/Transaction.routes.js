@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const RequestRate = require('../helpers/request_limiter');
 const ModelAuth = require('../middleware/auth/model_auth');
-const ValidateUser = require('../helpers/validator/validate_tnx');
+const ValidateTnx = require('../helpers/validator/validate_tnx');
 const { VerifyToken } = require('../middleware/auth/auth_user');
 const TransactionController = require('../controller/transaction_controller');
 
@@ -10,7 +10,7 @@ const TransactionController = require('../controller/transaction_controller');
 // Get all transaction category
 router.get('/get/all/tnx/category', [RequestRate.Limiter, VerifyToken], TransactionController.GetAllTransactionCategory);
 // Add new transaction
-router.post('/add/new/transaction', [RequestRate.Limiter, ModelAuth(ValidateUser), VerifyToken], TransactionController.AddNewTransaction);
+router.post('/add/new/transaction', [RequestRate.Limiter, ModelAuth(ValidateTnx), VerifyToken], TransactionController.AddNewTransaction);
 // Get all transactions
 router.get('/get/all/transactions', [RequestRate.Limiter, VerifyToken], TransactionController.GetAllTransaction);
 

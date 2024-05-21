@@ -7,7 +7,7 @@ exports.GetAllTransactionCategory = async (req, res) => {
         await TransactionCategoryModel.createIndexes();
         const all_tnx_category_data = await TransactionCategoryModel
             .find({ is_delete: false })
-            .select('-_id -is_delete -createdAt -updatedAt -__v') // Exclude sensitive fields
+            .select('-is_delete -createdAt -updatedAt -__v') // Exclude sensitive fields
             .lean(); // Convert to plain JavaScript objects for performance
 
         return res.status(200).json({ success: true, message: all_tnx_category_data?.length > 0 ? "Data fetched successfully!" : "No data found!", data: all_tnx_category_data });
@@ -19,7 +19,7 @@ exports.GetAllTransactionCategory = async (req, res) => {
 
 // Add new transaction
 exports.AddNewTransaction = async (req, res) => {
-    const { tnx_amout, category, note, date_time, tnx_type } = req.body;
+    const { tnx_amount, category, note, date_time, tnx_type } = req.body;
     try {
         // Retrieve data from token recieved.
         const decoded_token = req.decoded_token;
@@ -27,7 +27,7 @@ exports.AddNewTransaction = async (req, res) => {
 
         const NewTransction = await TransactionModel({
             user: user_id,
-            tnx_amout,
+            tnx_amount,
             category,
             note,
             date_time,
@@ -55,10 +55,10 @@ exports.GetAllTransaction = async (req, res) => {
         const user_tnx_data = await TransactionModel
             .find({ user: user_id, is_delete: false })
             .populate({
-                path: 'user',
-                select: '-password -createdAt -updatedAt -__v'
+                path: 'category',
+                select: '-createdAt -updatedAt -__v'
             })
-            .select('-createdAt -updatedAt -__v')
+            .select('-__v')
             .sort({ date_time: -1 })
             .lean();
 

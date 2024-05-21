@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const TransactionSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'user' },
-    tnx_amout: { type: Number, required: true },
-    category: { type: String, required: true },
+    tnx_amount: { type: Number, required: true },
+    category: { type: Schema.Types.ObjectId, ref: 'transaction_category', required: true },
     note: { type: String, default: "" },
     date_time: { type: Number, required: true },
     tnx_type: { type: String, required: true },

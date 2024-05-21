@@ -1,8 +1,8 @@
 const JOI = require('joi');
 
-module.exports = (TaskModel) => {
+module.exports = (TnxModel) => {
     const TransactionSchema = JOI.object({
-        tnx_amout: JOI.number().required().messages({
+        tnx_amount: JOI.number().required().messages({
             "any.required": "Transaction amount is required !!",
             "number.base": "Transaction amount must be a number !!",
         }),
@@ -25,5 +25,5 @@ module.exports = (TaskModel) => {
         }),
     });
 
-    return TransactionSchema.validate(TaskModel);
+    return TransactionSchema.validate(TnxModel);
 };
