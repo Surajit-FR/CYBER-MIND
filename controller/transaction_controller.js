@@ -7,6 +7,7 @@ exports.GetAllTransactionCategory = async (req, res) => {
         await TransactionCategoryModel.createIndexes();
         const all_tnx_category_data = await TransactionCategoryModel
             .find({ is_delete: false })
+            .sort({ date_time: -1 }) // Ensure recently added data is shown first
             .select('-is_delete -createdAt -updatedAt -__v') // Exclude sensitive fields
             .lean(); // Convert to plain JavaScript objects for performance
 
