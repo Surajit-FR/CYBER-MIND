@@ -89,6 +89,12 @@ exports.CreateFamily = async (req, res) => {
         // Generate unique family hash
         const family_hash_id = generateUniqueFamilyHash(family_name);
 
+        // Check if the user is already a member of another family
+        const existingMembership = await MemberModel.findOne({ user: decoded_token._id });
+        if (existingMembership) {
+            return res.status(400).json({ success: false, message: "You are already a member of another family" });
+        };
+
         // Create family
         const newFamily = new FamilyModel({
             family_name,
@@ -116,8 +122,8 @@ exports.CreateFamily = async (req, res) => {
             },
             { new: true }
         );
-
-        return res.status(201).json({ success: true, message: "Family created successfully", user });
+        const tokenData = CreateToken(USER_DATA);
+        return res.status(201).json({ success: true, message: "Family created successfully", data: user, token: tokenData });
 
     } catch (exc) {
         console.error(exc);
@@ -160,7 +166,7 @@ exports.AddMembers = async (req, res) => {
             // Save membership to database
             await newMembership.save();
             await UserModel.findByIdAndUpdate(
-                member.userId,
+                member.user,
                 {
                     family: _family.family_hash_id,
                 },

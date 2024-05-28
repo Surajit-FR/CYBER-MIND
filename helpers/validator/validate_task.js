@@ -20,6 +20,7 @@ module.exports = (TaskModel) => {
             "string.min": "Repeat field should be minimum 3 characters long !!",
             "string.pattern.base": "Only alphabets are allowed, both upper and lower case !!",
         }),
+        location: JOI.allow("").optional(),
     });
 
     return TaskSchema.validate(TaskModel);

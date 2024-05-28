@@ -106,6 +106,10 @@ exports.GetAllTask = async (req, res) => {
         // Fetch family based on who added the event.
         const FAMILY = await FamilyModel.findOne({ family_hash_id: decoded_token.family });
         const family_id = FAMILY?._id;
+
+        if (!family_id) {
+            return res.status(400).json({ success: false, message: "Family is missing." });
+        }
         // Ensure type index is created for faster querying
         await TaskModel.createIndexes();
 
@@ -133,14 +137,22 @@ exports.GetAllTask = async (req, res) => {
 exports.CompleteTask = async (req, res) => {
     const { task_id } = req.params;
     try {
+        // Find the task by its ID
+        const task = await TaskModel.findById(task_id);
+
+        if (!task) {
+            return res.status(404).json({ success: false, message: "Task not found" });
+        }
+        // Toggle the is_complete value
+        const newStatus = !task.is_complete;
         await TaskModel.findByIdAndUpdate(
             task_id,
             {
-                is_complete: true,
+                is_complete: newStatus,
             },
             { new: true }
         );
-        return res.status(200).json({ success: true, message: "This task now marked as completed!" });
+        return res.status(200).json({ success: true, message: newStatus ? "This task now marked as Complete!" : "This task now marked as Incomplete!" });
     } catch (exc) {
         console.log(exc.message);
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
