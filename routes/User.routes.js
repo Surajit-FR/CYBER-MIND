@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { VerifyToken } = require('../middleware/auth/auth_user');
-const { UserExsists } = require('../middleware/user/check_user');
+const { UserExsists, CheckUserFamily } = require('../middleware/user/check_user');
 const UserController = require('../controller/user_controller');
 const TaskEventMiddleware = require('../middleware/user/task&event/check_task_event');
 const TaskEventController = require('../controller/task_event_controller');
@@ -40,7 +40,9 @@ router.post('/add/task', [RequestRate.Limiter, VerifyToken, ModelAuth(ValidateTa
 // Get all tasks
 router.get('/get/all/task', [VerifyToken], TaskEventController.GetAllTask);
 // Complete tasks
-router.post('/complete/task/:task_id', [RequestRate.Limiter, VerifyToken], TaskEventController.CompleteTask);
+router.post('/complete/task/:task_id', [RequestRate.Limiter, VerifyToken, CheckUserFamily], TaskEventController.CompleteTask);
+// Delete tasks
+router.post('/delete/task/:task_id', [RequestRate.Limiter, VerifyToken, CheckUserFamily], TaskEventController.DeleteTask);
 
 
 

@@ -70,3 +70,53 @@ exports.GetAllTransaction = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
     };
 };
+
+// Get Balance
+exports.GetBalance = async (req, res) => {
+    try {
+        // Retrieve data from token received
+        const decoded_token = req.decoded_token;
+        const user_id = decoded_token?._id;
+
+        // Ensure type index is created for faster querying
+        await TransactionModel.createIndexes();
+
+        const user_tnx_data = await TransactionModel
+            .find({ user: user_id, is_delete: false })
+            .populate({
+                path: 'category',
+                select: '-createdAt -updatedAt -__v'
+            })
+            .select('-__v')
+            .sort({ date_time: -1 })
+            .lean();
+
+        // Initialize totals
+        let total_balance = 0;
+        let total_income = 0;
+        let total_expense = 0;
+
+        // Calculate totals
+        user_tnx_data.forEach(tnx => {
+            if (tnx.tnx_type === 'Income') {
+                total_income += tnx.tnx_amount;
+                total_balance += tnx.tnx_amount;
+            } else if (tnx.tnx_type === 'Expense') {
+                total_expense += tnx.tnx_amount;
+                total_balance -= tnx.tnx_amount;
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Total balance fetched successfully!",
+            total_income: total_income,
+            total_expense: total_expense,
+            total_balance: total_balance,
+        });
+
+    } catch (exc) {
+        console.log(exc.message);
+        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
+    }
+};

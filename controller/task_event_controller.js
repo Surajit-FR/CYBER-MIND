@@ -1,5 +1,6 @@
 const EventModel = require('../model/event_model');
 const FamilyModel = require('../model/family_model');
+const MemberModel = require('../model/member_model');
 const TaskModel = require('../model/task_model');
 
 
@@ -157,4 +158,21 @@ exports.CompleteTask = async (req, res) => {
         console.log(exc.message);
         return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
     };
+};
+
+// Delete Task
+exports.DeleteTask = async (req, res) => {
+    const { task_id } = req.params;
+    try {
+        const deletedTask = await TaskModel.findByIdAndDelete(task_id);
+
+        if (!deletedTask) {
+            return res.status(404).json({ success: false, message: "Task not found" });
+        }
+
+        return res.status(200).json({ success: true, message: "This task has been deleted!" });
+    } catch (exc) {
+        console.log(exc.message);
+        return res.status(500).json({ success: false, message: "Internal server error", error: exc.message });
+    }
 };

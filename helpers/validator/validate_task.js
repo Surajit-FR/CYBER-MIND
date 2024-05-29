@@ -2,7 +2,7 @@ const JOI = require('joi');
 
 module.exports = (TaskModel) => {
     const TaskSchema = JOI.object({
-        task_title: JOI.string().min(3).required().pattern(/^[a-zA-Z ]+$/).messages({
+        task_title: JOI.string().min(3).required().pattern(/^[a-zA-Z0-9 ]+$/).messages({
             "string.empty": "Task title is required !!",
             "string.min": "Minimum length should be 3",
             "string.pattern.base": "Only alphabets and blank spaces are allowed !!",
