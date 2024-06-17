@@ -112,6 +112,6 @@ const HOST = `${process.env.HOST}:${PORT}` || `http://localhost:${PORT}`;
 // Socket server
 io.on('connection', handleConnection);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server Connected On Port ${HOST}`)
 });
